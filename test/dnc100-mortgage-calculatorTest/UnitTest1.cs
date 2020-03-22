@@ -56,4 +56,5 @@ namespace dnc100_mortgage_calculatorTest
             Assert.Equal(testQuotient, Math.Round(mortgage.InterestQuotient(monthlyInterestRate, compoundedInterest, numberOfPayments), 4));
         }
     }
+
 }

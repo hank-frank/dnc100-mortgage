@@ -6,74 +6,57 @@ namespace dnc100_mortgage_calculator
 {
     public class Mortgage
     {
-    private int period;
-    private int term;
-    private double interest;
-    private double principle;
+        private int _period;
+        private int _term;
+        private double _interest;
+        private double _principle;
 
-    public Mortgage(double mPrinciple, double mInterest, int mTerm, int mPeriod)
-        {
-            period = mPeriod;
-            term = mTerm;
-            interest = mInterest;
-            principle = mPrinciple;
-            
-        }
+        public Mortgage(double principle, double interest, int term, int period)
+            {
+                _period = period;
+                _term = term;
+                _interest = interest;
+                _principle = principle;
+                
+            }
 
-        public double Calculate()
-        {
-            int months = period * term;
-            double r = interest / 1200;
-            double top = r * Math.Pow((1 + r), months);
-            double bottom = Math.Pow((1 + r), months) - 1;
-            double payment = (principle * (top / bottom));
+            public double Calculate()
+            {
+                double monthlyInterestRate = MonthlyInterestRate(_interest, _period);
+                int numberOfPayments = NumberOfPayments(_term, _period);
+                double compoundedInterestRate = CompoundedInterestRate(monthlyInterestRate, numberOfPayments);
+                double interestQuotient = InterestQuotient(monthlyInterestRate, compoundedInterestRate, numberOfPayments);
+                return _principle * interestQuotient;
+                
+            }
 
-            string str = payment.ToString("0.00");
-            double pay = Convert.ToDouble(str);
+            public double MonthlyInterestRate(double interest, int period)
+            {
 
-            return pay;
-            
-        }
+                double percent = interest / 100;
+                double monthlyRate = percent / period;
+                
+                return monthlyRate;
+            }
 
-        public double MonthlyInterestRate(double interest, int period)
-        {
+            public int NumberOfPayments(int term, int period)
+            {
+                return period * term;
+            }
 
-            double percent = interest / 100;
-            double monthlyRate = percent / period;
-              
-            return monthlyRate;
-        }
+            public double CompoundedInterestRate(double monthlyInterestRate, int numberOfPayments)
+            {
+                double final = Math.Pow((1 + monthlyInterestRate), numberOfPayments);
+                return final;
+            }
 
-        public int NumberOfPayments(int term, int period)
-        {
-            return period * term;
-        }
+            public double InterestQuotient(double monthlyInterestRate, double compoundedInterestRate, int numberOfPayments)
+            {
 
-        public double CompoundedInterestRate(double monthlyInterestRate, int numberOfPayments)
-        {
-            double final = Math.Pow((1 + monthlyInterestRate), numberOfPayments);
-            return final;
-        }
+                double iQ = (monthlyInterestRate * numberOfPayments) * (1 - compoundedInterestRate);
 
-        public double InterestQuotient(double monthlyInterestRate, double compoundedInterestRate, int numberOfPayments)
-        {
-
-            double iQ = (monthlyInterestRate * numberOfPayments) * (1 - compoundedInterestRate);
-
-            return Math.Abs(iQ);
-        }
+                return Math.Abs(iQ);
+                //return (monthlyInterestRate * compoundedInterestRate) / ((Math.Pow((1 + monthlyInterestRate), numberOfPayments)) - 1);
+    }
     }
 }
-
-//public static double MortgageCalculator(double balance, double rate, int term, int period)
-//{
-//  int months = term * 12;
-//  double r = rate / 1200;
-//  double top = r * Math.Pow((1 + r), months);
-//  double bottom = Math.Pow((1 + r), months) - 1;
-//  double payment = (balance * (top / bottom));
-
-//  string str = payment.ToString("0.00");
-//  double pay = Convert.ToDouble(str);
-//  return pay;
-//}
